@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.iouapp.R
@@ -39,6 +40,7 @@ fun EditUserScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
     var name by remember { mutableStateOf("") }
 
     LaunchedEffect(user?.id) {
@@ -84,7 +86,7 @@ fun EditUserScreen(
                             onNavigateBack()
                         } else {
                             scope.launch {
-                                snackbarHostState.showSnackbar(message = stringResource(id = R.string.name_required))
+                                snackbarHostState.showSnackbar(message = context.getString(R.string.name_required))
                             }
                         }
                     },
