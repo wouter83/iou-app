@@ -38,4 +38,24 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             repository.updateUser(user.copy(name = trimmedName))
         }
     }
+
+    fun addToBalance(user: User, amount: Double) {
+        if (amount == 0.0) return
+        viewModelScope.launch {
+            repository.updateUser(user.copy(balance = user.balance + amount))
+        }
+    }
+
+    fun subtractFromBalance(user: User, amount: Double) {
+        if (amount == 0.0) return
+        viewModelScope.launch {
+            repository.updateUser(user.copy(balance = user.balance - amount))
+        }
+    }
+
+    fun deleteUser(user: User) {
+        viewModelScope.launch {
+            repository.deleteUser(user)
+        }
+    }
 }

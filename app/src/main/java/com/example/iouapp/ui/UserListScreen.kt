@@ -3,6 +3,7 @@ package com.example.iouapp.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.iouapp.R
 import com.example.iouapp.data.User
+import com.example.iouapp.ui.theme.NegativeRed
+import com.example.iouapp.ui.theme.PositiveGreen
+import java.text.NumberFormat
+import java.util.Currency
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,14 +91,33 @@ private fun UserRow(user: User, onClick: () -> Unit) {
             contentColor = MaterialTheme.colorScheme.onSurface
         )
     ) {
-        Text(
-            text = user.name,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            style = MaterialTheme.typography.bodyLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = user.name,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            val currency = NumberFormat.getCurrencyInstance().apply {
+                currency = Currency.getInstance("EUR")
+                maximumFractionDigits = 2
+                minimumFractionDigits = 2
+            }
+            val amountText = currency.format(user.balance)
+            val amountColor = if (user.balance < 0.0) NegativeRed else PositiveGreen
+            Text(
+                text = amountText,
+                color = amountColor,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }

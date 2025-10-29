@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -28,6 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.iouapp.R
 import com.example.iouapp.data.User
+import com.example.iouapp.ui.theme.NegativeRed
+import com.example.iouapp.ui.theme.PositiveGreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,13 +38,17 @@ import kotlinx.coroutines.launch
 fun EditUserScreen(
     user: User?,
     onNavigateBack: () -> Unit,
-    onSave: (User, String) -> Boolean
+    onSave: (User, String) -> Boolean,
+    onAddAmount: (User, Double) -> Unit,
+    onSubtractAmount: (User, Double) -> Unit,
+    onDelete: (User) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     var name by remember { mutableStateOf("") }
+    var amountText by remember { mutableStateOf("") }
 
     LaunchedEffect(user?.id) {
         name = user?.name.orEmpty()
@@ -78,6 +85,58 @@ fun EditUserScreen(
                     singleLine = true
                 )
 
+                OutlinedTextField(
+                    value = amountText,
+                    onValueChange = { amountText = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(text = stringResource(id = R.string.amount_hint)) },
+                    singleLine = true
+                )
+
+                // Amount actions
+                androidx.compose.foundation.layout.Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            focusManager.clearFocus()
+                            val parsed = amountText.replace(',', '.').toDoubleOrNull()
+                            if (parsed == null || parsed == 0.0) {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(message = context.getString(R.string.amount_required))
+                                }
+                            } else if (user != null) {
+                                onAddAmount(user, parsed)
+                                amountText = ""
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = PositiveGreen, contentColor = androidx.compose.ui.graphics.Color.White)
+                    ) {
+                        Text(text = stringResource(id = R.string.add))
+                    }
+
+                    Button(
+                        onClick = {
+                            focusManager.clearFocus()
+                            val parsed = amountText.replace(',', '.').toDoubleOrNull()
+                            if (parsed == null || parsed == 0.0) {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(message = context.getString(R.string.amount_required))
+                                }
+                            } else if (user != null) {
+                                onSubtractAmount(user, parsed)
+                                amountText = ""
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = NegativeRed, contentColor = androidx.compose.ui.graphics.Color.White)
+                    ) {
+                        Text(text = stringResource(id = R.string.subtract))
+                    }
+                }
+
                 Button(
                     onClick = {
                         focusManager.clearFocus()
@@ -100,6 +159,19 @@ fun EditUserScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = stringResource(id = R.string.cancel))
+                }
+
+                Button(
+                    onClick = {
+                        user?.let {
+                            onDelete(it)
+                            onNavigateBack()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = NegativeRed, contentColor = androidx.compose.ui.graphics.Color.White)
+                ) {
+                    Text(text = stringResource(id = R.string.delete))
                 }
             }
         }
