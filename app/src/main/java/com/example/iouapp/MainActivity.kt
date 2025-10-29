@@ -90,6 +90,15 @@ fun IOUNavHost(viewModel: UserViewModel) {
                         viewModel.updateUser(user, trimmed)
                         true
                     }
+                },
+                onAddAmount = { u: User, amount: Double ->
+                    viewModel.addToBalance(u, amount)
+                },
+                onSubtractAmount = { u: User, amount: Double ->
+                    viewModel.subtractFromBalance(u, amount)
+                },
+                onDelete = { u: User ->
+                    viewModel.deleteUser(u)
                 }
             )
         }
