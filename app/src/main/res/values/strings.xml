@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">IOU App</string>
+    <string name="add_user">Add user</string>
+    <string name="edit_user">Edit user</string>
+    <string name="user_name_hint">Name</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="name_required">Please enter a name.</string>
+    <string name="user_list_empty">No users yet. Tap the + button to add one.</string>
+</resources>
